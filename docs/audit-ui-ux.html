@@ -1,0 +1,1127 @@
+<title>Audit UX YoosFood</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+/* ── Palette : encre à dominante brun-rouge sur papier légèrement rosé.
+      Sévérités traitées comme un code séparé de l'accent. ─────────── */
+:root {
+  --paper:      #F2EEEC;
+  --surface:    #FBF9F8;
+  --surface-2:  #E9E3E0;
+  --ink:        #17100F;
+  --ink-soft:   #4A3B38;
+  --muted:      #766360;
+  --rule:       #DAD0CC;
+  --rule-soft:  #E6DEDB;
+  --accent:     #8C1D18;
+  --accent-dim: #B4534B;
+
+  --crit:       #A3160F;
+  --crit-bg:    #F6E3E1;
+  --major:      #A4560A;
+  --major-bg:   #F7EADA;
+  --medium:     #77600F;
+  --medium-bg:  #F2EDD8;
+  --good:       #2C6A4B;
+  --good-bg:    #E0EDE5;
+
+  --shadow: 0 1px 0 rgba(23,16,15,.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:      #141010;
+    --surface:    #1C1716;
+    --surface-2:  #251E1D;
+    --ink:        #EFE8E5;
+    --ink-soft:   #C9BBB7;
+    --muted:      #9C8A85;
+    --rule:       #322928;
+    --rule-soft:  #29211F;
+    --accent:     #EE8177;
+    --accent-dim: #C4655D;
+
+    --crit:       #FF8B7C;
+    --crit-bg:    #33191A;
+    --major:      #E9A455;
+    --major-bg:   #2E2114;
+    --medium:     #DCC259;
+    --medium-bg:  #2A2515;
+    --good:       #6FCF9B;
+    --good-bg:    #16281F;
+
+    --shadow: 0 1px 0 rgba(0,0,0,.35);
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper:      #141010;
+  --surface:    #1C1716;
+  --surface-2:  #251E1D;
+  --ink:        #EFE8E5;
+  --ink-soft:   #C9BBB7;
+  --muted:      #9C8A85;
+  --rule:       #322928;
+  --rule-soft:  #29211F;
+  --accent:     #EE8177;
+  --accent-dim: #C4655D;
+
+  --crit:       #FF8B7C;
+  --crit-bg:    #33191A;
+  --major:      #E9A455;
+  --major-bg:   #2E2114;
+  --medium:     #DCC259;
+  --medium-bg:  #2A2515;
+  --good:       #6FCF9B;
+  --good-bg:    #16281F;
+
+  --shadow: 0 1px 0 rgba(0,0,0,.35);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px 96px;
+}
+
+/* ── Typographie ─────────────────────────────────────────────────── */
+h1, h2, h3, h4, .ui {
+  font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  text-wrap: balance;
+}
+.mono, code, .num {
+  font-family: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── En-tête ─────────────────────────────────────────────────────── */
+header.masthead {
+  border-bottom: 2px solid var(--ink);
+  padding: 56px 0 22px;
+  margin-bottom: 0;
+}
+.eyebrow {
+  font-family: "Archivo", Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 18px;
+}
+h1 {
+  font-size: clamp(38px, 6vw, 66px);
+  line-height: .98;
+  letter-spacing: -.025em;
+  font-weight: 800;
+  margin: 0 0 20px;
+}
+h1 .thin { font-weight: 500; color: var(--muted); display: block; font-size: .58em; letter-spacing: -.01em; line-height: 1.1; margin-top: 10px; }
+
+.standfirst {
+  font-size: 20px;
+  line-height: 1.5;
+  max-width: 62ch;
+  color: var(--ink-soft);
+  margin: 0 0 26px;
+}
+.standfirst strong { color: var(--ink); font-weight: 600; }
+
+.method {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11.5px;
+  color: var(--muted);
+  padding-bottom: 4px;
+}
+.method span { white-space: nowrap; }
+.method b { color: var(--ink-soft); font-weight: 500; }
+
+/* ── Bandeau de mesures ──────────────────────────────────────────── */
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(178px, 1fr));
+  border-bottom: 1px solid var(--rule);
+}
+.metric {
+  padding: 22px 22px 20px 0;
+  border-right: 1px solid var(--rule-soft);
+}
+.metric:last-child { border-right: 0; }
+.metric .v {
+  font-family: "Archivo", Arial, sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -.03em;
+  display: block;
+  color: var(--crit);
+}
+.metric.is-neutral .v { color: var(--ink); }
+.metric .u { font-size: .5em; font-weight: 600; letter-spacing: 0; color: var(--muted); }
+.metric .k {
+  display: block;
+  margin-top: 9px;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--ink-soft);
+  max-width: 22ch;
+}
+
+/* ── Corps : rail + colonne ──────────────────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 208px minmax(0, 1fr);
+  gap: 52px;
+  align-items: start;
+  padding-top: 44px;
+}
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 0; padding-top: 32px; }
+  .rail { position: static !important; margin-bottom: 34px; }
+}
+
+.rail { position: sticky; top: 28px; }
+.rail-title {
+  font-family: "Archivo", Arial, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 4px;
+}
+.rail a {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--rule-soft);
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-family: "Archivo", Arial, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.rail a:hover { color: var(--accent); }
+.rail a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.rail a .n {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* ── Sections ────────────────────────────────────────────────────── */
+section { scroll-margin-top: 24px; }
+h2 {
+  font-size: clamp(24px, 3vw, 31px);
+  letter-spacing: -.02em;
+  line-height: 1.12;
+  margin: 54px 0 6px;
+  padding-top: 26px;
+  border-top: 2px solid var(--ink);
+  font-weight: 800;
+}
+section:first-of-type h2 { margin-top: 0; padding-top: 0; border-top: 0; }
+.section-note {
+  color: var(--muted);
+  font-size: 15.5px;
+  max-width: 66ch;
+  margin: 0 0 26px;
+}
+
+/* ── Fiches de constat ───────────────────────────────────────────── */
+.finding {
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--rule);
+  background: var(--surface);
+  padding: 20px 22px 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.finding.crit   { border-top-color: var(--crit); }
+.finding.major  { border-top-color: var(--major); }
+.finding.medium { border-top-color: var(--medium); }
+
+.f-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.chip {
+  font-family: "Archivo", Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+}
+.chip.crit   { color: var(--crit);   background: var(--crit-bg); }
+.chip.major  { color: var(--major);  background: var(--major-bg); }
+.chip.medium { color: var(--medium); background: var(--medium-bg); }
+.chip.good   { color: var(--good);   background: var(--good-bg); }
+.f-id {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.f-title {
+  font-family: "Archivo", Arial, sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -.012em;
+  line-height: 1.25;
+  margin: 0 0 10px;
+  width: 100%;
+}
+.finding p { margin: 0 0 10px; max-width: 68ch; color: var(--ink-soft); font-size: 16px; }
+.finding p:last-child { margin-bottom: 0; }
+.finding strong { color: var(--ink); font-weight: 600; }
+
+code {
+  font-size: .87em;
+  background: var(--surface-2);
+  padding: 1px 5px;
+  color: var(--ink);
+  word-break: break-word;
+}
+
+.evidence {
+  border-left: 2px solid var(--rule);
+  padding: 10px 0 10px 14px;
+  margin: 12px 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  overflow-x: auto;
+}
+.evidence .lbl {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+.evidence b { color: var(--crit); font-weight: 600; }
+
+.fix {
+  margin-top: 13px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--rule);
+  font-size: 15.5px;
+}
+.fix .lbl {
+  font-family: "Archivo", Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-right: 8px;
+}
+
+/* ── Bilan positif ───────────────────────────────────────────────── */
+.keeps { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+.keep { background: var(--surface); padding: 16px 20px; }
+.keep h4 {
+  font-size: 15.5px;
+  margin: 0 0 5px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  display: flex; align-items: baseline; gap: 9px;
+}
+.keep h4::before {
+  content: "";
+  width: 7px; height: 7px;
+  background: var(--good);
+  flex: none;
+  transform: translateY(-1px);
+}
+.keep p { margin: 0; font-size: 15px; color: var(--ink-soft); max-width: 72ch; }
+
+/* ── Plan d'action ───────────────────────────────────────────────── */
+table.plan {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15.5px;
+}
+.tablewrap { overflow-x: auto; }
+table.plan th {
+  font-family: "Archivo", Arial, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: left;
+  padding: 0 16px 9px 0;
+  border-bottom: 1px solid var(--ink);
+  white-space: nowrap;
+}
+table.plan td {
+  padding: 13px 16px 13px 0;
+  border-bottom: 1px solid var(--rule-soft);
+  vertical-align: top;
+  color: var(--ink-soft);
+}
+table.plan td:first-child {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 13px;
+  color: var(--accent);
+  white-space: nowrap;
+  font-weight: 500;
+}
+table.plan td.what { color: var(--ink); }
+table.plan td.refs { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+footer.colophon {
+  margin-top: 56px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.75;
+  max-width: 78ch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+html { scroll-behavior: smooth; }
+a:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow">Audit d'interface et d'expérience · 26 août 2026</p>
+  <h1>Beau site,<br>tunnel qui fuit.
+    <span class="thin">YoosFood — accueil, menu, fiche produit, caisse</span>
+  </h1>
+  <p class="standfirst">
+    Le travail graphique est réel : la direction artistique tient, la fiche produit est bien pensée,
+    l'architecture logicielle est propre. Ce qui ne tient pas, c'est <strong>la chaîne qui va du visiteur
+    à la commande payée</strong>. Trois ruptures la cassent avant toute question de goût : la page d'accueil
+    est vide pour Google et inerte à la molette, le prix change entre le panier et la caisse, et le
+    catalogue affiché ne correspond pas à la marque qu'on vient de vendre au visiteur.
+  </p>
+  <div class="method">
+    <span><b>Méthode :</b> build de production (<code>next build</code> + <code>next start</code>)</span>
+    <span><b>Navigateur :</b> Chromium via Playwright 1.56</span>
+    <span><b>Accessibilité :</b> axe-core, règles WCAG 2.1 A/AA</span>
+    <span><b>Écrans :</b> 1920·1440·1280·820·390·360 + paysage 844×390</span>
+  </div>
+</header>
+
+<div class="scoreboard">
+  <div class="metric">
+    <span class="v">106<span class="u"> car.</span></span>
+    <span class="k">de texte indexable dans le HTML serveur de l'accueil — et ce sont ceux du panier vide</span>
+  </div>
+  <div class="metric">
+    <span class="v">1,86<span class="u"> Mo</span></span>
+    <span class="k">chargés sur l'accueil mobile, dont 1,70 Mo d'images non optimisées</span>
+  </div>
+  <div class="metric">
+    <span class="v">800<span class="u"> F</span></span>
+    <span class="k">d'écart de total entre le tiroir panier et la page de caisse</span>
+  </div>
+  <div class="metric">
+    <span class="v">61</span>
+    <span class="k">cibles tactiles sous 44 px sur l'accueil mobile</span>
+  </div>
+  <div class="metric">
+    <span class="v">13</span>
+    <span class="k">manquements bloquants ou majeurs relevés par axe-core</span>
+  </div>
+  <div class="metric is-neutral">
+    <span class="v">0</span>
+    <span class="k">changement d'URL sur les 4 panneaux de l'accueil</span>
+  </div>
+</div>
+
+<div class="layout">
+
+  <nav class="rail" aria-label="Sommaire">
+    <p class="rail-title">Constats</p>
+    <a href="#tunnel"><span>Le tunnel de commande</span><span class="n">6</span></a>
+    <a href="#nav"><span>Naviguer dans l'accueil</span><span class="n">5</span></a>
+    <a href="#promesses"><span>Promesses non tenues</span><span class="n">5</span></a>
+    <a href="#marque"><span>Catalogue &amp; marque</span><span class="n">5</span></a>
+    <a href="#a11y"><span>Accessibilité</span><span class="n">6</span></a>
+    <a href="#perf"><span>Poids &amp; référencement</span><span class="n">5</span></a>
+    <a href="#garder"><span>Ce qu'il faut garder</span><span class="n">6</span></a>
+    <a href="#plan"><span>Par où commencer</span><span class="n">→</span></a>
+  </nav>
+
+  <main>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <section id="tunnel">
+    <h2>Le tunnel de commande</h2>
+    <p class="section-note">
+      C'est le seul endroit du site où de l'argent change de main. C'est aussi le plus fragile.
+    </p>
+
+    <article class="finding crit">
+      <div class="f-head"><span class="chip crit">Bloquant</span><span class="f-id">T-01</span></div>
+      <h3 class="f-title">Le prix change entre le panier et la caisse</h3>
+      <p>
+        Deux règles de livraison ont été écrites séparément : le tiroir facture 800 F sous
+        5 000 F d'achat (<code>CartDrawer.jsx</code>, <code>FREE_DELIVERY = 5000</code>), la page de caisse
+        affiche « Offerte » en dur (<code>panier/page.jsx</code>). Le client voit donc son total
+        <strong>baisser sans explication</strong> en passant à la caisse — et remonter s'il revient en arrière.
+        Un total qui bouge tout seul est la façon la plus rapide de perdre une commande.
+      </p>
+      <div class="evidence">
+        <span class="lbl">Mesuré — panier d'une sauce à 500 F</span>
+        Tiroir&nbsp;: sous-total 500 FCFA · livraison 800 FCFA · <b>Total 1 300 FCFA</b><br>
+        Caisse&nbsp;: sous-total 500 FCFA · livraison Offerte · <b>Total 500 FCFA</b>
+      </div>
+      <p>
+        Corollaire : la barre « Plus que 4 500 FCFA pour la livraison offerte&nbsp;! » pousse le client à
+        dépenser pour un avantage que la caisse lui accorde déjà.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Une seule fonction de tarification, appelée par le tiroir et par la caisse. Si la livraison est réellement offerte, supprimer la barre de progression ; sinon, facturer les 800 F jusqu'au bout.</p>
+    </article>
+
+    <article class="finding crit">
+      <div class="f-head"><span class="chip crit">Bloquant</span><span class="f-id">T-02</span></div>
+      <h3 class="f-title">On peut commander sans donner d'adresse</h3>
+      <p>
+        Seul le téléphone porte <code>required</code>. Le nom et l'adresse de livraison sont facultatifs,
+        côté navigateur comme côté serveur : <code>/api/commander</code> accepte
+        <code>address: ""</code> sans broncher. Une commande peut donc partir chez le commerçant
+        sans nom et sans adresse — il ne reste qu'un numéro à rappeler.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Rendre nom et adresse obligatoires dans le formulaire <em>et</em> dans la route API, avec un message par champ. Le contrôle du téléphone (<code>lib/phone.js</code>) est déjà fait dans les deux, il suffit de le prendre pour modèle.</p>
+    </article>
+
+    <article class="finding major">
+      <div class="f-head"><span class="chip major">Majeur</span><span class="f-id">T-03</span></div>
+      <h3 class="f-title">Le client voit un message d'erreur d'ingénieur</h3>
+      <p>
+        Quand la commande échoue, le texte de la route serveur est affiché tel quel au client.
+        Il nomme une variable d'environnement interne — sans intérêt pour l'acheteur, et sans dire
+        quoi faire.
+      </p>
+      <div class="evidence">
+        <span class="lbl">Mesuré — validation d'une commande</span>
+        « <b>Commandes indisponibles — CAMILLE_SECRET_KEY absente côté serveur.</b> »
+      </div>
+      <p class="fix"><span class="lbl">Correction</span>Traduire les erreurs serveur en une phrase pour le client (« La commande n'a pas pu partir. Écrivez-nous sur WhatsApp, on la prend tout de suite. » + le bouton), et garder le détail technique dans les journaux.</p>
+    </article>
+
+    <article class="finding major">
+      <div class="f-head"><span class="chip major">Majeur</span><span class="f-id">T-04</span></div>
+      <h3 class="f-title">Quatre champs sans étiquette, et l'exemple est le numéro du restaurant</h3>
+      <p>
+        Nom, téléphone, adresse et note n'ont que des <em>placeholders</em>, qui disparaissent dès la
+        première frappe : le client ne peut plus vérifier ce qu'il remplit, et un lecteur d'écran
+        n'annonce rien. Aucun champ ne porte <code>autocomplete</code> — le remplissage automatique
+        du téléphone est donc désactivé sur mobile, là où presque tout le trafic se trouve.
+      </p>
+      <p>
+        Le numéro donné en exemple est celui de YoosFood (<code>237 6 91 17 54 80</code>, le même que
+        <code>WHATSAPP_FALLBACK</code>) : certains clients le recopieront. Sur un écran de 390 px il est
+        d'ailleurs tronqué en plein milieu : « WhatsApp avec indicatif (ex. 237 6 91 17 5 ».
+      </p>
+      <p class="fix"><span class="lbl">Correction</span><code>&lt;label&gt;</code> visible au-dessus de chaque champ, <code>autocomplete="name | tel | street-address"</code>, et un exemple qui ne soit pas un vrai numéro joignable.</p>
+    </article>
+
+    <article class="finding medium">
+      <div class="f-head"><span class="chip medium">Moyen</span><span class="f-id">T-05</span></div>
+      <h3 class="f-title">La confirmation de commande n'existe que le temps de l'écran</h3>
+      <p>
+        La référence de commande vit dans un <code>useState</code>. Un rechargement, un retour arrière,
+        un onglet fermé, et le client n'a plus rien — pas de page de confirmation à revoir, pas d'URL
+        à garder. Le seul filet est l'accusé WhatsApp envoyé par Camille.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Rediriger vers <code>/commande/[ref]</code> après succès, et rappeler la référence, les articles et le total sur cette page.</p>
+    </article>
+
+    <article class="finding medium">
+      <div class="f-head"><span class="chip medium">Moyen</span><span class="f-id">T-06</span></div>
+      <h3 class="f-title">Aucune information de livraison avant la validation</h3>
+      <p>
+        Ni délai, ni zone couverte, ni horaires, ni moyen de paiement ne sont indiqués sur la page de
+        caisse — seulement « Livraison Douala &amp; environs » en petit sous le bouton. Le pied de page
+        du menu annonce « 10h – 02h, 7j/7 », l'accueil promet « 20 minutes » et la fiche produit
+        « 30–45 min ». Trois délais différents, aucun au moment de payer.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Un délai unique, affiché à la caisse, et une phrase sur le paiement (à la livraison ? mobile money ?) avant le bouton.</p>
+    </article>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <section id="nav">
+    <h2>Naviguer dans l'accueil</h2>
+    <p class="section-note">
+      L'accueil est un diaporama horizontal de quatre panneaux verrouillés en pleine hauteur.
+      Le parti pris est défendable ; l'exécution laisse le visiteur bloqué.
+    </p>
+
+    <article class="finding crit">
+      <div class="f-head"><span class="chip crit">Bloquant</span><span class="f-id">N-01</span></div>
+      <h3 class="f-title">La molette ne fait rien</h3>
+      <p>
+        Le code convertit le défilement vertical en défilement horizontal
+        (<code>el.scrollLeft += e.deltaY</code>), mais la piste est en <code>snap-mandatory</code> :
+        tant que le déplacement n'a pas franchi la moitié de la largeur d'un panneau, l'accrochage
+        <strong>ramène le visiteur exactement là où il était</strong>. Un cran de molette normal ne
+        suffit jamais. L'écran ne bouge pas : la page a l'air cassée.
+      </p>
+      <div class="evidence">
+        <span class="lbl">Mesuré — 1440×900, depuis le panneau 1</span>
+        molette 200 px → position finale <b>0</b> (retour au départ)<br>
+        molette 400 px → position finale <b>0</b> (retour au départ)<br>
+        molette 800 px → position finale 1440 (panneau 2)<br>
+        <span style="color:var(--muted)">idem en 1920×1080</span>
+      </div>
+      <p class="fix"><span class="lbl">Correction</span>Ne pas déplacer le défilement à la main : compter le geste et appeler <code>goTo(index ± 1)</code> une fois un seuil franchi, avec un verrou le temps de l'animation. La flèche et la pagination fonctionnent déjà — elles doivent juste cesser d'être le seul moyen.</p>
+    </article>
+
+    <article class="finding major">
+      <div class="f-head"><span class="chip major">Majeur</span><span class="f-id">N-02</span></div>
+      <h3 class="f-title">L'URL ne change jamais, le bouton Retour quitte le site</h3>
+      <p>
+        Les quatre panneaux vivent tous sur <code>/</code>. On ne peut pas envoyer « Histoire » à
+        quelqu'un, ni revenir au panneau précédent avec le navigateur : le retour arrière fait
+        <strong>sortir du site</strong>. Sur mobile, où le geste de retour est réflexe, c'est une sortie
+        pure et simple.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Un fragment par panneau (<code>/#menu</code>, <code>/#histoire</code>…) synchronisé avec <code>history.replaceState</code>, et lecture du fragment au chargement.</p>
+    </article>
+
+    <article class="finding major">
+      <div class="f-head"><span class="chip major">Majeur</span><span class="f-id">N-03</span></div>
+      <h3 class="f-title">En paysage, le hero est inutilisable</h3>
+      <p>
+        En 844×390 — un téléphone tourné — la barre de pagination flottante <strong>recouvre le
+        paragraphe d'accroche</strong>, et aucun bouton d'action n'est visible : ni « Commander », ni
+        « Voir le menu ». Il ne reste que le titre.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Sous 500 px de hauteur, coller la pagination en bas de flux plutôt qu'en surimpression, et réduire l'échelle du titre.</p>
+    </article>
+
+    <article class="finding major">
+      <div class="f-head"><span class="chip major">Majeur</span><span class="f-id">N-04</span></div>
+      <h3 class="f-title">Sur petit écran, les deux tiers du panneau sont cachés sans le dire</h3>
+      <p>
+        En 360×640 — un format encore très courant — le premier panneau contient 1 217 px de contenu
+        sous la ligne de flottaison, dans un conteneur dont la barre de défilement est masquée
+        (<code>hide-scroll</code>). Rien n'indique qu'il faut faire défiler : ni ombre de coupe, ni
+        chevron, ni contenu tronqué visible.
+      </p>
+      <div class="evidence">
+        <span class="lbl">Mesuré — panneau 1 en 360×640</span>
+        hauteur du contenu 1 857 px · hauteur visible 640 px · <b>1 217 px hors écran</b>
+      </div>
+      <p class="fix"><span class="lbl">Correction</span>Rendre la barre de défilement visible sur mobile, ou laisser un élément dépasser volontairement en bas de cadre pour signaler la suite.</p>
+    </article>
+
+    <article class="finding medium">
+      <div class="f-head"><span class="chip medium">Moyen</span><span class="f-id">N-05</span></div>
+      <h3 class="f-title">Les flèches du clavier changent de panneau pendant la saisie</h3>
+      <p>
+        L'écouteur clavier est posé sur <code>window</code> sans vérifier où se trouve le curseur.
+        Un client qui rédige un avis et appuie sur la flèche droite pour déplacer son curseur
+        <strong>voit le site glisser vers un autre panneau</strong>, son texte hors de vue.
+      </p>
+      <div class="evidence">
+        <span class="lbl">Mesuré — curseur dans le champ « Partagez votre expérience… »</span>
+        Flèche droite → position <b>2880 → 4320</b> (panneau 3 → panneau 4)
+      </div>
+      <p class="fix"><span class="lbl">Correction</span>Ignorer l'événement si <code>document.activeElement</code> est un champ de saisie ou un élément éditable.</p>
+    </article>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <section id="promesses">
+    <h2>Ce que le site promet et ne tient pas</h2>
+    <p class="section-note">
+      Une vitrine peut être ambitieuse. Elle ne peut pas proposer des choses qui ne répondent pas :
+      chaque clic mort entame la confiance nécessaire pour laisser son numéro et son adresse.
+    </p>
+
+    <article class="finding major">
+      <div class="f-head"><span class="chip major">Majeur</span><span class="f-id">P-01</span></div>
+      <h3 class="f-title">Le bouton « Commander » du hero ne fait rien</h3>
+      <p>
+        Le bouton le plus gros, le plus rouge et le mieux placé de la page n'a pas d'action. Vérifié :
+        après le clic, ni l'URL, ni le panneau, ni le panier n'ont changé. Même chose pour le
+        « Commander » de la barre de navigation, la loupe, le compte, la carte « App YoosFood »,
+        « Utiliser ma position » et les pastilles App Store / Google Play.
+      </p>
+      <p>
+        Le seul vrai chemin d'achat est le lien discret « Menu complet » — masqué sous 640 px.
+        Sur mobile, l'appel à l'action principal est un cul-de-sac et le vrai chemin est invisible.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Brancher tous les « Commander » sur <code>/menu</code>. Retirer la recherche et le compte tant qu'ils n'existent pas — un icône absent ne déçoit personne.</p>
+    </article>
+
+    <article class="finding major">
+      <div class="f-head"><span class="chip major">Majeur</span><span class="f-id">P-02</span></div>
+      <h3 class="f-title">Les avis publiés disparaissent au rechargement</h3>
+      <p>
+        Le formulaire répond « Merci pour votre avis ✓ » et affiche l'avis en tête de liste. Il n'est
+        envoyé nulle part : rechargement effectué, l'avis n'existe plus. Le client croit avoir parlé
+        au commerçant.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Envoyer l'avis à Camille comme les commandes, ou remplacer le formulaire par un lien WhatsApp/Google Avis. Ne pas laisser un formulaire qui ment.</p>
+    </article>
+
+    <article class="finding major">
+      <div class="f-head"><span class="chip major">Majeur</span><span class="f-id">P-03</span></div>
+      <h3 class="f-title">Les chiffres de réassurance se contredisent</h3>
+      <p>
+        L'accueil affiche « 4.9 ★ — basé sur 58K+ avis clients » à quelques centaines de pixels de
+        « 12K+ livraisons ». <strong>Plus d'avis que de livraisons</strong> : le chiffre censé rassurer
+        est celui qui trahit le plus vite que rien n'est réel. Sur la fiche produit, « Best-seller » et
+        « 4.9 / 5 » sont codés en dur sur <em>tous</em> les produits.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Descendre à des chiffres vrais et vérifiables, quitte à ce qu'ils soient petits — « 4,8 sur 210 avis Google » convainc davantage que 58 000 avis venus de nulle part. Réserver « Best-seller » aux produits qui le sont.</p>
+    </article>
+
+    <article class="finding medium">
+      <div class="f-head"><span class="chip medium">Moyen</span><span class="f-id">P-04</span></div>
+      <h3 class="f-title">Un panneau entier sur quatre vend une application qui n'existe pas</h3>
+      <p>
+        Le quatrième panneau — un quart de l'accueil — présente points de fidélité, « Tourne &amp; Gagne »,
+        accès VIP, suivi en direct, QR code et badges de téléchargement. Aucun de ces éléments n'est
+        cliquable ni relié à quoi que ce soit.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Remplacer ce panneau par ce qui manque réellement au site : les vrais produits, les horaires, les points de vente, un moyen de commander.</p>
+    </article>
+
+    <article class="finding medium">
+      <div class="f-head"><span class="chip medium">Moyen</span><span class="f-id">P-05</span></div>
+      <h3 class="f-title">Un compte à rebours figé et des boutiques toujours fermées</h3>
+      <p>
+        Les « Deals de minuit » affichent <code>02 : 47 : 39</code> — trois chaînes de caractères qui
+        ne bougent jamais. Les statuts des quatre boutiques (« Ouvert », « Ferme bientôt », « Fermé »)
+        et leurs distances (« 1.2 km ») sont eux aussi écrits en dur : Deido est fermé à toute heure,
+        et le site prétend connaître la position du visiteur qu'il n'a jamais demandée.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Calculer le rebours depuis l'heure réelle, ou retirer l'offre. Déduire les statuts des horaires d'ouverture, et n'afficher une distance qu'après avoir obtenu la géolocalisation.</p>
+    </article>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <section id="marque">
+    <h2>Catalogue et cohérence de marque</h2>
+
+    <article class="finding major">
+      <div class="f-head"><span class="chip major">Majeur</span><span class="f-id">M-01</span></div>
+      <h3 class="f-title">L'accueil vend du poulet, le menu sert des pizzas</h3>
+      <p>
+        Tant que l'API Camille ne répond pas — le cas par défaut, sans clé configurée — chaque page
+        montre son propre catalogue de démonstration, et ils ne se ressemblent pas.
+        L'accueil annonce « l'expérience poulet préférée du Cameroun » avec buckets et zingers ;
+        <code>/menu</code> ouvre sur <strong>Margherita Classique, Pepperoni Suprême et Veggie Garden</strong>.
+        Le visiteur qui clique sur « Menu complet » atterrit dans une autre enseigne.
+      </p>
+      <p>
+        Les catégories y sont d'ailleurs en anglais — <em>Pizza, Burger, Chicken, Drinks, Sauces,
+        Combo Menu</em> — sur un site entièrement rédigé en français.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Un seul catalogue de repli, dans <code>data/menu.js</code>, fidèle à ce que YoosFood vend réellement, et des libellés de catégorie en français.</p>
+    </article>
+
+    <article class="finding medium">
+      <div class="f-head"><span class="chip medium">Moyen</span><span class="f-id">M-02</span></div>
+      <h3 class="f-title">Trois orthographes de la marque sur le même écran</h3>
+      <p>
+        <strong>YoosFood</strong> dans le titre et les textes, <strong>YossFood</strong> dans les
+        attributs <code>alt</code> de tous les logos et dans le compte TikTok
+        (<code>@12yossfood</code>), <strong>YOSS Food</strong> dans les visuels de la page menu.
+        Le nom de l'enseigne est la première chose qu'un moteur de recherche apprend d'un commerce
+        local ; trois graphies le diluent.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Choisir. Puis chercher-remplacer, y compris dans les <code>alt</code> et les visuels.</p>
+    </article>
+
+    <article class="finding medium">
+      <div class="f-head"><span class="chip medium">Moyen</span><span class="f-id">M-03</span></div>
+      <h3 class="f-title">Deux sites cousus ensemble</h3>
+      <p>
+        L'accueil est bordeaux, plein écran, horizontal, avec une barre transparente flottante.
+        <code>/menu</code> est crème, vertical, avec un en-tête collant blanc, un autre logo, un autre
+        menu de navigation et un bouton « Connexion » qui n'apparaît nulle part ailleurs. Aucune
+        transition entre les deux : rien ne dit au visiteur qu'il est toujours chez YoosFood.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Un en-tête commun (logo, panier, « Commander ») posé sur les deux univers, et un ordre de navigation identique.</p>
+    </article>
+
+    <article class="finding medium">
+      <div class="f-head"><span class="chip medium">Moyen</span><span class="f-id">M-04</span></div>
+      <h3 class="f-title">Trois écritures du prix, deux façons de s'adresser au client</h3>
+      <p>
+        Les prix s'écrivent <code>2 900 F</code> sur l'accueil, <code>Prix : 3 500 FCFA</code> sur le
+        menu, <code>3 500 FCFA</code> dans le panier. Et le tunnel alterne le vouvoiement
+        (« <em>Votre</em> commande », « Ajout<em>ez</em> vos plats préférés ») et le tutoiement
+        (« <em>Ton</em> nom », « <em>Tu</em> vas recevoir la confirmation ») — parfois sur le même
+        écran, entre le tiroir et la caisse.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Un seul formateur de prix, importé partout. Un seul registre — le tutoiement va bien à la marque, il suffit de s'y tenir.</p>
+    </article>
+
+    <article class="finding medium">
+      <div class="f-head"><span class="chip medium">Moyen</span><span class="f-id">M-05</span></div>
+      <h3 class="f-title">Un quart de la page menu est fait d'affiches Instagram</h3>
+      <p>
+        Quatre blocs pleine largeur reprennent des visuels de réseaux sociaux avec leur texte incrusté :
+        numéros de téléphone, adresse, comptes sociaux — et un qui souhaite <em>Bonne Fête du Travail</em>.
+        Ce texte est illisible en petit, invisible pour les moteurs de recherche, intraduisible, et il
+        double des informations déjà présentes dans le pied de page. Tous ces blocs pointent vers
+        <code>#menu</code>, sans que rien ne l'indique.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Garder une ou deux affiches comme atmosphère, reconstruire les autres en HTML, et faire pointer chaque promotion vers le produit concerné.</p>
+    </article>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <section id="a11y">
+    <h2>Accessibilité</h2>
+    <p class="section-note">
+      Relevé avec axe-core sur les trois pages et quatre largeurs, complété par des essais au clavier.
+    </p>
+
+    <article class="finding crit">
+      <div class="f-head"><span class="chip crit">Bloquant</span><span class="f-id">A-01</span></div>
+      <h3 class="f-title">Treize boutons et liens n'ont aucun nom</h3>
+      <p>
+        Un lecteur d'écran annonce « bouton », sans plus. Sont concernés la loupe, le compte, le logo
+        cliquable et les « + » d'ajout au panier de l'accueil, plus les trois liens de réseaux sociaux
+        du pied de page menu.
+      </p>
+      <div class="evidence">
+        <span class="lbl">axe-core</span>
+        <b>button-name</b> · critique · 10 éléments (accueil)<br>
+        <b>link-name</b> · sérieux · 3 éléments (menu)
+      </div>
+      <p class="fix"><span class="lbl">Correction</span><code>aria-label</code> sur chaque commande sans texte. Le reste du code le fait déjà correctement (« Panier », « Fermer », « Ajouter au panier ») — c'est une omission, pas une méconnaissance.</p>
+    </article>
+
+    <article class="finding major">
+      <div class="f-head"><span class="chip major">Majeur</span><span class="f-id">A-02</span></div>
+      <h3 class="f-title">Le tiroir panier n'est pas une vraie boîte de dialogue</h3>
+      <p>Quatre défauts se cumulent, tous vérifiés :</p>
+      <div class="evidence">
+        <span class="lbl">Mesuré — tiroir ouvert, écran 390×844</span>
+        Échap → le tiroir <b>reste ouvert</b><br>
+        focus après ouverture → <b>reste sur « Ajouter au panier »</b>, derrière le voile<br>
+        molette sur le voile → l'arrière-plan défile <b>1573 → 2173 px</b><br>
+        tiroir fermé → <code>aria-hidden="true"</code> mais ses boutons <b>restent tabulables</b>
+      </div>
+      <p>
+        Le dernier point est le plus gênant : un utilisateur au clavier traverse, sur chaque page,
+        une dizaine de contrôles invisibles avant d'atteindre le contenu.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span><code>role="dialog" aria-modal="true"</code>, fermeture sur Échap, focus déplacé dans le tiroir à l'ouverture et rendu au bouton à la fermeture, <code>overflow: hidden</code> sur <code>&lt;body&gt;</code> pendant l'ouverture, et <code>inert</code> (ou démontage) quand il est fermé.</p>
+    </article>
+
+    <article class="finding major">
+      <div class="f-head"><span class="chip major">Majeur</span><span class="f-id">A-03</span></div>
+      <h3 class="f-title">61 cibles tactiles trop petites sur l'accueil mobile</h3>
+      <p>
+        Les boutons « + » qui ajoutent au panier — l'action la plus rentable du site — mesurent
+        28×28 px sur l'accueil et 36×36 px sur le menu, contre 44×44 px recommandés. Les liens de
+        navigation de <code>/menu</code> font 20 px de haut. On rate, on tape à côté, on renonce.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Porter la zone cliquable à 44 px (avec du remplissage transparent si le rond doit rester petit), et espacer les cibles voisines d'au moins 8 px.</p>
+    </article>
+
+    <article class="finding medium">
+      <div class="f-head"><span class="chip medium">Moyen</span><span class="f-id">A-04</span></div>
+      <h3 class="f-title">Contrastes sous le seuil AA</h3>
+      <div class="evidence">
+        <span class="lbl">axe-core — color-contrast</span>
+        pagination, gris #6A7282 sur noir ······················ <b>4,34:1</b><br>
+        badge « PROMO 50% OFF », rouge #C10007 sur ambre ······· <b>3,72:1</b><br>
+        pied de page menu, gris #6A7282 sur #101828 ··········· <b>3,66:1</b><br>
+        <span style="color:var(--muted)">seuil requis : 4,5:1</span>
+      </div>
+      <p>
+        En plein soleil — la situation normale d'une commande à emporter à Douala — l'écart réel est
+        bien plus grand que ce que mesure un test en intérieur.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Passer les gris de <code>text-gray-500</code> à <code>text-gray-400</code> sur fond sombre, et le badge promo en blanc sur rouge plutôt qu'en rouge sur ambre.</p>
+    </article>
+
+    <article class="finding medium">
+      <div class="f-head"><span class="chip medium">Moyen</span><span class="f-id">A-05</span></div>
+      <h3 class="f-title">78 animations continuent malgré la préférence « moins d'animations »</h3>
+      <p>
+        Cœurs qui montent, doodles qui flottent, carrousel de vidéos : mesuré avec
+        <code>prefers-reduced-motion: reduce</code> actif, <strong>78 animations infinies tournent
+        toujours</strong>. Seuls les squelettes de chargement respectent la préférence — la règle
+        existe déjà dans <code>globals.css</code>, avec un commentaire qui explique exactement
+        pourquoi. Il suffit de l'étendre.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Ajouter <code>.tt-heart</code>, <code>.hero-float</code> et <code>.tt-marquee</code> au bloc <code>@media (prefers-reduced-motion: reduce)</code> déjà en place.</p>
+    </article>
+
+    <article class="finding medium">
+      <div class="f-head"><span class="chip medium">Moyen</span><span class="f-id">A-06</span></div>
+      <h3 class="f-title">Pas de structure de page sur l'accueil</h3>
+      <p>
+        Aucun <code>&lt;main&gt;</code>, 103 éléments hors point de repère, aucun lien d'évitement, et
+        le focus se limite au contour par défaut du navigateur — un trait d'1 px, quasi invisible sur
+        bordeaux. axe signale aussi une zone défilante inatteignable au clavier
+        (<code>scrollable-region-focusable</code>).
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Envelopper les panneaux dans <code>&lt;main&gt;</code>, ajouter un lien « Aller au contenu », et définir un style <code>:focus-visible</code> franc (anneau ambre 2 px) — la couleur de marque s'y prête.</p>
+    </article>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <section id="perf">
+    <h2>Poids et référencement</h2>
+    <p class="section-note">
+      Mesures prises sur le build de production, profil mobile 390×844.
+    </p>
+
+    <article class="finding crit">
+      <div class="f-head"><span class="chip crit">Bloquant</span><span class="f-id">R-01</span></div>
+      <h3 class="f-title">Google voit une page vide</h3>
+      <p>
+        Toute l'expérience d'accueil est chargée en <code>dynamic(..., { ssr: false })</code>.
+        Next.js renvoie donc un document sans contenu — la balise
+        <code>BAILOUT_TO_CLIENT_SIDE_RENDERING</code> le confirme dans le HTML. Le seul texte livré
+        par le serveur est celui du tiroir panier vide.
+      </p>
+      <div class="evidence">
+        <span class="lbl">Mesuré — texte indexable du HTML servi pour /</span>
+        « Votre commande Panier 0 Votre panier est vide Ajoutez vos plats préférés depuis le menu.
+        Découvrir le menu » — <b>106 caractères</b><br>
+        <span style="color:var(--muted)">à comparer : /menu 1 542 car. · /produit/… 714 car.</span>
+      </div>
+      <p>
+        Pour un restaurant dont les clients arrivent par « poulet Bonamoussadi » ou « livraison burger
+        Douala », c'est la page la plus importante du site qui est invisible.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Rendre le contenu des panneaux côté serveur et ne réserver le rendu client qu'aux parties qui touchent vraiment à <code>window</code> ou <code>localStorage</code> (le panier, le carrousel). Le catalogue, les textes et les prix n'en ont pas besoin.</p>
+    </article>
+
+    <article class="finding major">
+      <div class="f-head"><span class="chip major">Majeur</span><span class="f-id">R-02</span></div>
+      <h3 class="f-title">1,7 Mo d'images pour un écran de 390 px</h3>
+      <p>
+        Les images sont servies par des balises <code>&lt;img&gt;</code> brutes : pas de
+        <code>next/image</code>, pas de WebP ni d'AVIF, pas de <code>srcset</code>, aucune version
+        adaptée à la taille d'affichage. Des fichiers de 800 px de large sont téléchargés pour des
+        vignettes de 56 px, et le plus lourd du dossier pèse 264 Ko.
+      </p>
+      <div class="evidence">
+        <span class="lbl">Mesuré — production, profil mobile</span>
+        /&nbsp;····· 1 857 Ko transférés, dont <b>1 698 Ko d'images</b> (28 requêtes)<br>
+        /menu&nbsp; 1 589 Ko transférés, dont <b>1 220 Ko d'images</b> (27 requêtes)<br>
+        <span style="color:var(--muted)">le JavaScript, lui, est sobre : 104 à 120 Ko au premier chargement</span>
+      </div>
+      <p>
+        Sur une connexion 3G à ~500 kbit/s, courante hors des zones bien couvertes, cela représente une
+        trentaine de secondes avant que la page ait fini de se peindre. Le code est efficace ; ce sont
+        les images qui coûtent tout.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Passer les images à <code>next/image</code> (conversion et redimensionnement automatiques), en commençant par les vignettes de produits — c'est le gain le plus important pour le moins de travail.</p>
+    </article>
+
+    <article class="finding major">
+      <div class="f-head"><span class="chip major">Majeur</span><span class="f-id">R-03</span></div>
+      <h3 class="f-title">Aucune image n'a de dimensions déclarées</h3>
+      <p>
+        Sur les 30 images de l'accueil et les 23 du menu, aucune ne porte <code>width</code> ni
+        <code>height</code>. Le navigateur ne peut pas réserver la place : la mise en page saute à
+        mesure que les photos arrivent — et sur mobile, un doigt déjà en route rate sa cible.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Résolu automatiquement par <code>next/image</code> ; sinon, déclarer les dimensions ou un <code>aspect-ratio</code> sur chaque conteneur.</p>
+    </article>
+
+    <article class="finding major">
+      <div class="f-head"><span class="chip major">Majeur</span><span class="f-id">R-04</span></div>
+      <h3 class="f-title">Six lecteurs TikTok en lecture automatique servent de fond d'écran</h3>
+      <p>
+        Le fond du hero est un carrousel de six <code>&lt;iframe&gt;</code> du lecteur TikTok, en
+        lecture automatique et en boucle. Ils étaient bloqués par le réseau de test, donc leur coût
+        réel n'a pas été mesuré ici — mais six lecteurs vidéo simultanés en décoration, derrière un
+        voile dégradé qui les rend à moitié invisibles, représentent plusieurs mégaoctets et une charge
+        processeur permanente sur mobile. Ils apportent aussi des traceurs tiers sur la page d'accueil.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Une image d'affiche par défaut, et le lecteur seulement au clic — ou un fond vidéo unique, court, hébergé en propre et servi uniquement au-dessus de 1024 px.</p>
+    </article>
+
+    <article class="finding medium">
+      <div class="f-head"><span class="chip medium">Moyen</span><span class="f-id">R-05</span></div>
+      <h3 class="f-title">Un lien partagé sur WhatsApp n'affiche aucun aperçu</h3>
+      <p>
+        Les quatre pages partagent le même <code>&lt;title&gt;</code> et la même description. Il n'y a
+        aucune balise Open Graph, donc <strong>aucune vignette quand un client partage le lien</strong> —
+        alors que WhatsApp est le canal principal de la marque. Manquent également l'URL canonique,
+        <code>robots.txt</code> (404), <code>sitemap.xml</code> (404) et toute donnée structurée
+        <code>Restaurant</code> / <code>Menu</code>, qui alimentent les fiches locales de Google.
+      </p>
+      <p class="fix"><span class="lbl">Correction</span>Un <code>export const metadata</code> par page (titre, description, <code>openGraph.images</code>), plus <code>robots.ts</code>, <code>sitemap.ts</code> et un bloc JSON-LD <code>Restaurant</code> avec adresse, horaires et téléphone.</p>
+    </article>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <section id="garder">
+    <h2>Ce qu'il faut garder</h2>
+    <p class="section-note">
+      Ce rapport est sévère parce qu'on l'a demandé sévère. Plusieurs choses sont bien faites, et
+      certaines mieux que dans la plupart des sites de cette taille.
+    </p>
+
+    <div class="keeps">
+      <div class="keep">
+        <h4>La fiche produit est le modèle à généraliser</h4>
+        <p>Fil d'Ariane, choix de la quantité <em>avant</em> l'ajout, prix total affiché dans le bouton, trois arguments de réassurance, ingrédients, produits liés. C'est la page la mieux construite du site : le reste devrait s'aligner dessus, pas l'inverse.</p>
+      </div>
+      <div class="keep">
+        <h4>Le repli du catalogue est solide</h4>
+        <p>Camille en direct, puis le relais serveur si la clé publique est refusée, puis le catalogue local : la boutique reste debout sans clé, hors ligne, ou pendant que l'API répond. Peu de sites gèrent leurs trois cas.</p>
+      </div>
+      <div class="keep">
+        <h4>La clé secrète ne quitte jamais le serveur</h4>
+        <p>Les commandes passent par <code>/api/commander</code>, et seuls l'identifiant et la quantité sont transmis quand le produit vient de Camille — les prix sont relus en base, jamais crus sur parole depuis le navigateur.</p>
+      </div>
+      <div class="keep">
+        <h4>Le nettoyage du panier évite un échec à la caisse</h4>
+        <p><code>pruneMissing</code> écarte les lignes dont le produit a disparu du catalogue, plutôt que de laisser le client buter sur « Produit introuvable » au moment de valider. C'est une attention rare.</p>
+      </div>
+      <div class="keep">
+        <h4>La normalisation du téléphone est bien pensée</h4>
+        <p>Ajout automatique de l'indicatif camerounais, tolérance au 0 initial, message qui explique quoi faire, et le même contrôle appliqué dans le navigateur <em>et</em> sur le serveur. Le modèle à suivre pour l'adresse (T-02).</p>
+      </div>
+      <div class="keep">
+        <h4>Les squelettes de chargement</h4>
+        <p>De vrais squelettes plutôt que de faux produits, et le seul endroit du site qui respecte <code>prefers-reduced-motion</code>. L'intention d'accessibilité existe déjà — elle n'a simplement pas été étendue.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <section id="plan">
+    <h2>Par où commencer</h2>
+    <p class="section-note">
+      Classé par rapport entre l'effet sur les commandes et le travail nécessaire, pas par gravité.
+    </p>
+
+    <div class="tablewrap">
+      <table class="plan">
+        <thead>
+          <tr><th>Ordre</th><th>Ce qu'on répare</th><th>Pourquoi d'abord</th><th>Constats</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td class="what">Une seule règle de livraison, adresse obligatoire, message d'erreur en français courant</td>
+            <td>Trois corrections courtes sur la seule page qui rapporte de l'argent. Rien d'autre n'a ce rendement.</td>
+            <td class="refs">T-01 T-02 T-03</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td class="what">Brancher les « Commander », retirer les commandes mortes</td>
+            <td>Le plus gros bouton de l'accueil est un cul-de-sac, et le vrai chemin d'achat est masqué sur mobile.</td>
+            <td class="refs">P-01</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td class="what">Rendre l'accueil au serveur (SSR) et compléter les métadonnées</td>
+            <td>Sans cela, la page principale n'existe pas pour la recherche locale — d'où vient l'essentiel du trafic d'un restaurant.</td>
+            <td class="refs">R-01 R-05</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td class="what">Étiquettes et <code>autocomplete</code> à la caisse, cibles portées à 44 px</td>
+            <td>Chaque champ mal rempli est une commande à rappeler ou à perdre.</td>
+            <td class="refs">T-04 A-03</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td class="what"><code>next/image</code> sur toutes les vignettes</td>
+            <td>Divise par cinq ou six le poids des pages ; une seule modification par composant.</td>
+            <td class="refs">R-02 R-03</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td class="what">Réparer la molette, ajouter une URL par panneau</td>
+            <td>Un visiteur qui scrolle sans que rien ne bouge repart. Le retour arrière ne doit pas quitter le site.</td>
+            <td class="refs">N-01 N-02</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td class="what">Tiroir panier en boîte de dialogue, noms accessibles, animations réduites</td>
+            <td>Rend le site utilisable au clavier et au lecteur d'écran ; l'essentiel du code nécessaire existe déjà ailleurs.</td>
+            <td class="refs">A-01 A-02 A-05 A-06</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td class="what">Un catalogue de repli fidèle, une orthographe, un registre, un format de prix</td>
+            <td>Peu de code, effet immédiat sur la crédibilité de l'enseigne.</td>
+            <td class="refs">M-01 M-02 M-04</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td class="what">Retirer ou brancher tout ce qui est décoratif et faux</td>
+            <td>App inexistante, avis volatils, 58 000 avis, rebours figé, boutiques toujours fermées.</td>
+            <td class="refs">P-02 P-03 P-04 P-05</td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td class="what">Repenser le fond TikTok, le paysage et les petits écrans</td>
+            <td>Chantier plus long : touche à la mise en page du hero. À faire une fois le reste stabilisé.</td>
+            <td class="refs">R-04 N-03 N-04</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="colophon">
+    <p>
+      Audit réalisé sur la branche <code>claude/site-ui-ux-analysis-kr9oki</code>, commit <code>a5c3daa</code>.
+      Toutes les valeurs chiffrées de ce rapport proviennent de mesures faites sur le build de production
+      (<code>next build</code> puis <code>next start</code>), avec Chromium piloté par Playwright 1.56 et
+      axe-core en règles WCAG 2.1 A/AA, aux largeurs 1920, 1440, 1280, 820, 390 et 360 px, plus un essai
+      en paysage 844×390.
+    </p>
+    <p>
+      Deux limites à connaître : l'instance Camille n'était pas configurée, le site affichait donc son
+      catalogue de démonstration — ce qui rend visible le constat M-01, mais laisse le parcours avec un
+      vrai catalogue non testé. Et les <code>iframe</code> TikTok du hero étaient bloquées par le réseau
+      de test : leur coût réel (R-04) est décrit, pas mesuré.
+    </p>
+  </footer>
+
+  </main>
+</div>
+</div>
